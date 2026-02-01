@@ -29,6 +29,12 @@ export class Calculator {
     }
   }
 
+  private parseDisplay(display: string): number | null {
+    if (display.trim() === '' || display === 'Error') return null;
+    const n = Number(display);
+    return Number.isFinite(n) ? n : null;
+  }
+
   clear(): void {
     this.display = '0';
     this.previousValue = null;
@@ -47,7 +53,12 @@ export class Calculator {
   }
 
   inputOperator(op: Operator): void {
-    const currentValue = parseFloat(this.display);
+    const currentValue = this.parseDisplay(this.display);
+    if (currentValue === null) {
+      this.display = 'Error';
+      this.waitingForOperand = true;
+      return;
+    }
 
     if (this.previousValue !== null && this.operator !== null && !this.waitingForOperand) {
       this.previousValue = this.calculate(this.previousValue, currentValue, this.operator);
@@ -63,7 +74,12 @@ export class Calculator {
   calculateResult(): void {
     if (this.previousValue === null || this.operator === null) return;
 
-    const currentValue = parseFloat(this.display);
+    const currentValue = this.parseDisplay(this.display);
+    if (currentValue === null) {
+      this.display = 'Error';
+      this.waitingForOperand = true;
+      return;
+    }
     const result = this.calculate(this.previousValue, currentValue, this.operator);
 
     this.display = this.formatResult(result);
@@ -161,7 +177,8 @@ export class Calculator {
             this.toggleSign();
             break;
           case 'percent':
-            this.display = (parseFloat(this.display) / 100).toString();
+            const n = this.parseDisplay(this.display);
+            this.display = this.formatResult(n === null ? NaN : n / 100);
             break;
           case 'equals':
             this.calculateResult();

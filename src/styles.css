@@ -1,0 +1,120 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #1a1b26;
+  --surface: #24283b;
+  --surface-hover: #2d3250;
+  --display-bg: #16161e;
+  --text: #c0caf5;
+  --text-muted: #565f89;
+  --accent: #7aa2f7;
+  --accent-hover: #89b4fa;
+  --operator: #bb9af7;
+  --operator-hover: #c0a9ff;
+  --equals: #9ece6a;
+  --equals-hover: #b4f073;
+  --border: #3b4261;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.calculator {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+}
+
+.display {
+  background: var(--display-bg);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.5rem;
+  font-weight: 600;
+  text-align: right;
+  min-height: 3.5rem;
+  overflow-x: auto;
+  word-break: break-all;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s;
+  padding: 1rem;
+  color: inherit;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-number {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.btn-number:hover {
+  background: var(--border);
+}
+
+.btn-function {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.btn-function:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.btn-operator {
+  background: rgba(187, 154, 247, 0.15);
+  color: var(--operator);
+}
+
+.btn-operator:hover {
+  background: rgba(187, 154, 247, 0.25);
+  color: var(--operator-hover);
+}
+
+.btn-equals {
+  background: rgba(158, 206, 106, 0.2);
+  color: var(--equals);
+}
+
+.btn-equals:hover {
+  background: rgba(158, 206, 106, 0.3);
+  color: var(--equals-hover);
+}
+
+.btn-zero {
+  grid-column: span 2;
+}

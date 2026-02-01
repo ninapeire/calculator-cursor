@@ -1,4 +1,9 @@
-type Operator = '+' | '-' | '×' | '÷';
+const OPERATORS = ['+', '-', '×', '÷'] as const;
+type Operator = typeof OPERATORS[number];
+
+const isOperator = (x: unknown): x is Operator =>
+  typeof x === 'string' && OPERATORS.includes(x as Operator);
+
 
 export class Calculator {
   private display: string = '0';
@@ -164,9 +169,9 @@ export class Calculator {
           case 'decimal':
             this.inputDecimal();
             break;
-          case 'operator':
-            this.inputOperator(value as Operator);
-            break;
+            case 'operator':
+              if (isOperator(value)) this.inputOperator(value);
+              break;
           case 'clear':
             this.clear();
             break;

@@ -13,6 +13,8 @@ export class CalculatorLogic {
   private previousValue: number | null = null;
   private operator: Operator | null = null;
   private waitingForOperand: boolean = false;
+  private lastOperator: Operator | null = null;
+  private lastRhs: number | null = null;
 
   getDisplay(): string {
     return this.display;
@@ -42,10 +44,51 @@ export class CalculatorLogic {
     this.waitingForOperand = false;
   }
 
+  /**
+   * Exercise 3: Square root of the current display value.
+   *
+   * Requirements (see CalculatorExercises.test.ts):
+   * - If the current display parses to a non‑negative number n,
+   *   replace it with √n.
+   * - For negative numbers or invalid displays, show "Error".
+   * - Use existing helpers (parseDisplay / formatResult) where sensible.
+   *
+   * The starter implementation is intentionally wrong; you should
+   * replace it while keeping the public API the same.
+   */
+  inputSquareRoot(): void {
+    const n = this.parseDisplay(this.display);
+    if (n === null || n < 0) {
+      this.display = 'Error';
+      this.waitingForOperand = true;
+      return;
+    }
+    this.display = this.formatResult(Math.sqrt(n));
+    this.waitingForOperand = true;
+  }
+
   clear(): void {
     this.display = '0';
     this.previousValue = null;
     this.operator = null;
+    this.waitingForOperand = false;
+    this.lastOperator = null;
+    this.lastRhs = null;
+  }
+
+  /**
+   * Exercise 1: Clear entry (CE)
+   *
+   * Intended behaviour (see CalculatorExercises.test.ts):
+   * - Reset only the "current" entry on the display back to "0".
+   * - Keep any pending operator and previous value so you can
+   *   correct just the second operand (e.g. 2 + 9, CE, 4, = -> 6).
+   *
+   * The starter implementation below is intentionally incomplete;
+   * update it so that all "Exercise 1" tests pass.
+   */
+  clearEntry(): void {
+    this.display = '0';
     this.waitingForOperand = false;
   }
 
@@ -79,20 +122,45 @@ export class CalculatorLogic {
   }
 
   calculateResult(): void {
-    if (this.previousValue === null || this.operator === null) return;
+    // Case A: We have a pending operation (normal "=" behavior)
+    if (this.previousValue !== null && this.operator !== null) {
+      const currentValue = this.parseDisplay(this.display);
+      if (currentValue === null) {
+        this.display = 'Error';
+        this.waitingForOperand = true;
+        return;
+      }
 
-    const currentValue = this.parseDisplay(this.display);
-    if (currentValue === null) {
-      this.display = 'Error';
+      const result = this.calculate(this.previousValue, currentValue, this.operator);
+
+      // Save for repeated "="
+      this.lastOperator = this.operator;
+      this.lastRhs = currentValue;
+
+      this.display = this.formatResult(result);
+      this.previousValue = null;
+      this.operator = null;
       this.waitingForOperand = true;
       return;
     }
-    const result = this.calculate(this.previousValue, currentValue, this.operator);
 
-    this.display = this.formatResult(result);
-    this.previousValue = null;
-    this.operator = null;
-    this.waitingForOperand = true;
+    // Case B: Repeated "=" (no pending operator, but we remember the last one)
+    if (this.lastOperator !== null && this.lastRhs !== null) {
+      const currentValue = this.parseDisplay(this.display);
+      if (currentValue === null) {
+        this.display = 'Error';
+        this.waitingForOperand = true;
+        return;
+      }
+
+      const result = this.calculate(currentValue, this.lastRhs, this.lastOperator);
+      this.display = this.formatResult(result);
+      this.waitingForOperand = true;
+      return;
+    }
+
+    // Nothing to do (no pending op, no stored op)
+    return;
   }
 
   private parseDisplay(display: string): number | null {
